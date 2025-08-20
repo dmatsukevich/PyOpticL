@@ -27,6 +27,9 @@ turn = {"up-right":-45,
         "down-left":135,
         "left-down":-45}
 
+# Flag that chooses between imperial and metric grid sizes 
+metric = False 
+
 def check_bound(obj1, obj2):
     bound1 = obj1.BoundBox
     bound2 = obj2.BoundBox
@@ -42,11 +45,11 @@ class baseplate:
 
     Args:
         dx, dy, dz (float): The footprint of the baseplate including the gaps
-        x, y (float): The coordinates the baseplate (and all elements) should be placed at (in inches)
+        x, y (float): The coordinates the baseplate (and all elements) should be placed at (in inches for imperial or 25mm step for metric)
         gap (float): The amount of material to remove around the edge of the baseplate
         name (string): Name of the baseplate object
         drill (bool): Whether or not the baseplate should be drilled
-        mount_holes (tuple[]): An array representing the x and y coordinates of each mount point (in inches)
+        mount_holes (tuple[]): An array representing the x and y coordinates of each mount point (in inches for imperial or 25mm step for metric)
         label (string): The label to be embossed into the side of the baseplate
         x_offset, y_offset (float): Additional offset from the grid in the x and y directions
         optics_dz (float): The optical height of baseplate
@@ -71,11 +74,17 @@ class baseplate:
         obj.addProperty('App::PropertyFloatList', 'ySplits').ySplits = y_splits
         obj.addProperty('App::PropertyLength', 'InvertLabel').InvertLabel = invert_label
 
-        obj.Placement = App.Placement(App.Vector(x*inch, y*inch, z*inch), App.Rotation(angle, 0, 0), App.Vector(0, 0, 0))
+        if metric:
+            obj.Placement = App.Placement(App.Vector(x*25.0, y*25.0, z*25.0), App.Rotation(angle, 0, 0), App.Vector(0, 0, 0))
+        else:
+            obj.Placement = App.Placement(App.Vector(x*inch, y*inch, z*inch), App.Rotation(angle, 0, 0), App.Vector(0, 0, 0))
         self.active_baseplate = obj.Name
         obj.addProperty("App::PropertyLinkListHidden","ChildObjects")
         for x, y in mount_holes:
-            mount = self.place_element("Mount Hole (%d, %d)"%(x, y), optomech.baseplate_mount, (x+0.5)*inch, (y+0.5)*inch, 0)
+            if metric:
+                mount = self.place_element("Mount Hole (%d, %d)"%(x, y), optomech.baseplate_mount, (x+0.5)*25.0, (y+0.5)*25.0, 0) # metric table grid               
+            else:
+                mount = self.place_element("Mount Hole (%d, %d)"%(x, y), optomech.baseplate_mount, (x+0.5)*inch, (y+0.5)*inch, 0)
             obj.ChildObjects += [mount]
     
     def add_cover(self, dz, **args):
@@ -349,7 +358,7 @@ def place_element_on_table(name, obj_class, x, y, angle, z=0, **args):
         Args:
             name (string): Label for the object
             obj_class (class): The object class associated with the part to be placed
-            x, y, z (float): The coordinates the object should be placed at in inches
+            x, y, z (float): The coordinates the object should be placed at (in inches for imperial or 25mm steps for metric)
             angle (float): The rotation of the object about the z axis
             optional (bool): If this is true the object will also transmit beams
             args (any): Additional args to be passed to the object (see object class docs)
@@ -362,7 +371,10 @@ def place_element_on_table(name, obj_class, x, y, angle, z=0, **args):
         # if not hasattr(obj, "BasePlacement"):
         obj.addProperty("App::PropertyPlacement", "BasePlacement")
 
-        obj.BasePlacement = App.Placement(App.Vector(x*inch, y*inch, z*inch), App.Rotation(angle, 0, 0), App.Vector(0, 0, 0))
+        if metric:
+            obj.BasePlacement = App.Placement(App.Vector(x*25.0, y*25.0, z*25.0), App.Rotation(angle, 0, 0), App.Vector(0, 0, 0))
+        else:         
+            obj.BasePlacement = App.Placement(App.Vector(x*inch, y*inch, z*inch), App.Rotation(angle, 0, 0), App.Vector(0, 0, 0))
         return obj
     
 def place_element_on_table_general(name, obj_class, x, y, z=0,angle_x = 0, angle_y = 0, angle_z = 0,  **args):
@@ -372,7 +384,7 @@ def place_element_on_table_general(name, obj_class, x, y, z=0,angle_x = 0, angle
         Args:
             name (string): Label for the object
             obj_class (class): The object class associated with the part to be placed
-            x, y, z (float): The coordinates the object should be placed at in inches
+            x, y, z (float): The coordinates the object should be placed at (in inches for imperial or 25mm steps for metric)
             angle (float): The rotation of the object about the z axis
             optional (bool): If this is true the object will also transmit beams
             args (any): Additional args to be passed to the object (see object class docs)
@@ -383,7 +395,10 @@ def place_element_on_table_general(name, obj_class, x, y, z=0,angle_x = 0, angle
         obj_class(obj, **args)
         
         obj.addProperty("App::PropertyPlacement","BasePlacement")
-        obj.BasePlacement = App.Placement(App.Vector(x*inch, y*inch, z*inch), App.Rotation(angle_x, angle_y, angle_z), App.Vector(0, 0, 0))
+        if metric:
+            obj.BasePlacement = App.Placement(App.Vector(x*25.0, y*25.0, z*25.0), App.Rotation(angle_x, angle_y, angle_z), App.Vector(0, 0, 0))
+        else:
+            obj.BasePlacement = App.Placement(App.Vector(x*inch, y*inch, z*inch), App.Rotation(angle_x, angle_y, angle_z), App.Vector(0, 0, 0))
         return obj
 
 class baseplate_cover:
@@ -458,7 +473,7 @@ class table_grid:
     Add an optical table mounting grid
 
     Args:
-        dx, yy (float): The dimentions of the table grid (in inches)
+        dx, yy (float): The dimentions of the table grid (in inches for imperial or 25mm steps for metric)
         z_off (float): The z offset of the top of the grid surface
     '''
     def __init__(self, dx, dy, z_off=-3/2*inch):
@@ -474,12 +489,17 @@ class table_grid:
         obj.ViewObject.ShapeColor = (0.9, 0.9, 0.9)
 
     def execute(self, obj):
-        part = Part.makeBox(self.dx*inch, self.dy*inch, inch/4, App.Vector(0, 0, self.z_off-inch/4))
+        if metric:
+            step = 25.0
+        else:
+            step = inch
+
+        part = Part.makeBox(self.dx*step, self.dy*step, step/4, App.Vector(0, 0, self.z_off-step/4))
         holes = []
         for x in range(self.dx):
             for y in range(self.dy):
-                for z in [self.z_off+1e-2, self.z_off-inch/4-1e-2]:
-                    holes.append(Part.Circle(App.Vector((x+0.5)*inch, (y+0.5)*inch, z), App.Vector(0, 0, 1), inch/10))
+                for z in [self.z_off+1e-2, self.z_off-step/4-1e-2]:
+                    holes.append(Part.Circle(App.Vector((x+0.5)*step, (y+0.5)*step, z), App.Vector(0, 0, 1), step/10))
         temp = Part.makeCompound(holes)
         self.holes.Shape = temp
         obj.Shape = part
@@ -489,7 +509,7 @@ class table_no_grid:
     Add an optical table without mounting grid
 
     Args:
-        dx, yy (float): The dimentions of the table grid (in inches)
+        dx, yy (float): The dimentions of the table grid (in inches for imperial or 25mm steps for metric)
         z_off (float): The z offset of the top of the grid surface
     '''
     def __init__(self, dx, dy, z_off=-3/2*inch):
@@ -505,7 +525,12 @@ class table_no_grid:
         obj.ViewObject.ShapeColor = (0.9, 0.9, 0.9)
 
     def execute(self, obj):
-        part = Part.makeBox(self.dx*inch, self.dy*inch, inch/4, App.Vector(0, 0, self.z_off-inch/4))
+        if metric:
+            step = 25.0
+        else:
+            step = inch
+
+        part = Part.makeBox(self.dx*step, self.dy*step, step/4, App.Vector(0, 0, self.z_off-step/4))
         # holes = []
         # for x in range(self.dx):
         #     for y in range(self.dy):
