@@ -38,6 +38,13 @@ bolt_14_20 = {
 }
 
 # Metric bolts
+bolt_m2_5 = { 
+    "clear_dia":2.9,
+    "tap_dia":2.05,
+    "head_dia":4.60,
+    "head_dz":2.6 # With some tolerance
+}
+
 bolt_m3 = { # 4-40 equivalent 
     "clear_dia":3.4,
     "tap_dia":2.5,
@@ -4611,6 +4618,138 @@ class square_mirror:
         part = _custom_box(dx=obj.Thickness.Value, dy=obj.Width.Value, dz=obj.Height.Value,
                            x=0, y=0, z=0, dir=(-1, 0, 0))
         obj.Shape = part
+
+
+class qubig_eom_adapter:
+    '''
+    Surface adapter for post-mounted parts
+
+    Args:
+        drill (bool) : Whether baseplate mounting for this part should be drilled
+        mount_hole_dy (float) : The spacing between the two mount holes of the adapter
+        adapter_height (float) : The height of the suface adapter
+        outer_thickness (float) : The thickness of the walls around the bolt holes
+    '''
+    type = 'Part::FeaturePython'
+    def __init__(self, obj, drill=True, mount_hole_dy=40, adapter_height=8, outer_thickness=2):
+        obj.Proxy = self
+        ViewProvider(obj.ViewObject)
+
+        obj.addProperty('App::PropertyBool', 'Drill').Drill = drill
+        obj.addProperty('App::PropertyLength', 'MountHoleDistance').MountHoleDistance = mount_hole_dy
+        obj.addProperty('App::PropertyLength', 'AdapterHeight').AdapterHeight   = adapter_height
+        obj.addProperty('App::PropertyLength', 'OuterThickness').OuterThickness = outer_thickness
+        obj.addProperty('Part::PropertyPartShape', 'DrillPart')
+
+        obj.ViewObject.ShapeColor = adapter_color
+        obj.setEditorMode('Placement', 2)
+        self.drill_tolerance = 1
+        self.baseplate_holes =  [(-20.0, -20.0), (-20.0, 20.0), (20.0, -20.0), (20.0, 20.0)]
+        self.m2_5_holes = [(-18.5, -7.5), (-18.5, 7.5), (18.5, -7.5), (18.5, 7.5)]
+        self.m4_holes   = [(0.0, 0.0)]
+
+        if metric:
+            self.bolt = bolt_8_32
+            self.tiny_bolt = bolt_m2_5
+        else:
+            self.bolt = bolt_m4
+            self.tiny_bolt = bolt_m2_5
+
+    def execute(self, obj):
+#        dx = self.bolt['head_dia']+obj.OuterThickness.Value*2
+#        dy = dx+obj.MountHoleDistance.Value
+
+        dx = 52.0
+        dy = 52.0
+        dz = obj.AdapterHeight.Value
+
+        part = _custom_box(dx=dx, dy=dy, dz=dz,
+                           x=0, y=0, z=0, dir=(0, 0, -1),
+                           fillet=5)
+        
+        for x, y in self.m4_holes:
+            part = part.cut(_custom_cylinder(dia=self.bolt['clear_dia'], dz=dz,
+                                             head_dia=self.bolt['head_dia'], head_dz=self.bolt['head_dz'],
+                                             x=x, y=y, z=-dz, dir=(0,0,1)))
+        
+        for x, y in self.m2_5_holes:
+            part = part.cut(_custom_cylinder(dia=self.tiny_bolt['clear_dia'], dz=dz,
+                                             head_dia=self.tiny_bolt['head_dia'], head_dz=self.tiny_bolt['head_dz'],
+                                             x=x, y=y, z=-dz, dir=(0,0,1)))
+
+        for x,y in self.baseplate_holes:
+            part = part.cut(_custom_cylinder(dia=self.bolt['clear_dia'], dz=dz,
+                                             head_dia=self.bolt['head_dia'], head_dz=self.bolt['head_dz'],
+                                             x=x, y=y, z=0))
+        obj.Shape = part
+
+        part = _bounding_box(obj, self.drill_tolerance, 6)
+        for x,y in self.baseplate_holes:
+            part = part.fuse(_custom_cylinder(dia=self.bolt['tap_dia'], dz=drill_depth, x=x, y=y, z=0))
+        part.Placement = obj.Placement
+        obj.DrillPart = part
+
+
+class qubig_eom_yb2_1:
+    '''
+    QUBIG Electro optical modulator, model PM-Yb+_2.1
+
+    Args:
+        mount_hole_dy (float) : The spacing between the two mount holes of it's adapter
+
+    Sub-Parts:
+        qubig_eom_adapter (adapter_args)
+    '''
+    type = 'Mesh::FeaturePython'
+    def __init__(self, obj, drill=True, adapter_args=dict(), adapter = True):
+        obj.Proxy = self
+        ViewProvider(obj.ViewObject)
+
+        obj.addProperty('App::PropertyBool', 'Drill').Drill = drill
+        obj.ViewObject.ShapeColor = misc_color
+        self.part_numbers = ['PM-Yb+_2.1']
+        self.transmission = True
+        self.max_angle = 90
+        self.max_width = inch/2
+
+        if adapter:
+            _add_linked_object(obj, "QUBIG EOM Adapter", qubig_eom_adapter, pos_offset=(0.0, 0.0, -10.0), rot_offset=(0, 0, 0), **adapter_args)
+
+    def execute(self, obj):
+        mesh = _import_stl("QUBIG_YB_21.stl", (0.0, 0.0, 0.0), (0.0, 0.0, -10.0))
+        mesh.Placement = obj.Mesh.Placement
+        obj.Mesh = mesh
+
+
+class qubig_eom_yb7_4:
+    '''
+    QUBIG Electro optical modulator, model PM-Yb+_2.1
+
+    Args:
+        mount_hole_dy (float) : The spacing between the two mount holes of it's adapter
+
+    Sub-Parts:
+        qubig_eom_adapter (adapter_args)
+    '''
+    type = 'Mesh::FeaturePython'
+    def __init__(self, obj, drill=True, adapter_args=dict(), adapter = True):
+        obj.Proxy = self
+        ViewProvider(obj.ViewObject)
+
+        obj.addProperty('App::PropertyBool', 'Drill').Drill = drill
+        obj.ViewObject.ShapeColor = misc_color
+        self.part_numbers = ['PM-Yb+_7.4']
+        self.transmission = True
+        self.max_angle = 90
+        self.max_width = inch/2
+
+        if adapter:
+            _add_linked_object(obj, "QUBIG EOM Adapter", qubig_eom_adapter, pos_offset=(0.0, 0.0, -7.5), rot_offset=(0, 0, 0), **adapter_args)
+
+    def execute(self, obj):
+        mesh = _import_stl("QUBIG_YB_74.stl", (0.0, 0.0, 0.0), (0.0, 0.0, -7.5))
+        mesh.Placement = obj.Mesh.Placement
+        obj.Mesh = mesh
 
 
 class ViewProvider:
