@@ -150,7 +150,7 @@ class beam_path:
             length = i[3]
             if length == 0:
                 length = 50
-            temp = Part.makeCylinder(obj.Width.Value, length, App.Vector(i[0], i[1], 0), App.Vector(cos(i[2]), sin(i[2]), 0))
+            temp = Part.makeCylinder(obj.Width.Value, length + 0.1, App.Vector(i[0], i[1], 0), App.Vector(cos(i[2]), sin(i[2]), 0)) # +0.1, avoids <class 'ValueError'>: Null shape in fuse(comp)
             shapes.append(temp)
         comp = Part.Compound(shapes)
         self.comp = comp
@@ -164,7 +164,7 @@ class beam_path:
             length = i[3]
             if length == 0:
                 length = 50
-            temp = Part.makeCylinder(obj.DrillWidth.Value, length, App.Vector(i[0], i[1], 0), App.Vector(cos(i[2]), sin(i[2]), 0))
+            temp = Part.makeCylinder(obj.DrillWidth.Value, length + 0.1, App.Vector(i[0], i[1], 0), App.Vector(cos(i[2]), sin(i[2]), 0)) # +0.1
             part = part.fuse(temp)
 
         part.translate(App.Vector(-self.x, -self.y, 0))
