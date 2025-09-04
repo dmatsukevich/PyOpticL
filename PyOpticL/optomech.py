@@ -4752,6 +4752,37 @@ class qubig_eom_yb7_4:
         obj.Mesh = mesh
 
 
+class cqt_photodiode:
+    '''
+    CQT Photodiode
+
+    Args:
+        mount_hole_dy (float) : The spacing between the two mount holes of it's adapter
+
+    Sub-Parts:
+        cqt_photodiode_adapter (adapter_args)
+    '''
+    type = 'Mesh::FeaturePython'
+    def __init__(self, obj, drill=True, adapter_args=dict(mount_hole_dy=42.0, outer_thickness=3), adapter = True):
+        obj.Proxy = self
+        ViewProvider(obj.ViewObject)
+
+        obj.addProperty('App::PropertyBool', 'Drill').Drill = drill
+        obj.ViewObject.ShapeColor = misc_color
+        self.part_numbers = ['CQT Photodiode']
+        self.transmission = False
+        self.max_angle = 90
+        self.max_width = inch
+
+        if adapter:
+            _add_linked_object(obj, "Photodiode Adapter", surface_adapter, pos_offset=(0.0, 0.0, -19.5), rot_offset=(0, 0, 0), **adapter_args)
+
+    def execute(self, obj):
+        mesh = _import_stl("cqt_photodiode.stl", (0.0, 0.0, 90.0), (0.0, 0.0, -19.5))
+        mesh.Placement = obj.Mesh.Placement
+        obj.Mesh = mesh
+
+
 class ViewProvider:
     def __init__(self, obj):
         obj.Proxy = self
