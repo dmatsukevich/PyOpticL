@@ -4752,7 +4752,7 @@ class qubig_eom_yb7_4:
         obj.Mesh = mesh
 
 
-class cqt_photodiode:
+class photodiode_cqt:
     '''
     CQT Photodiode
 
@@ -4768,11 +4768,14 @@ class cqt_photodiode:
         ViewProvider(obj.ViewObject)
 
         obj.addProperty('App::PropertyBool', 'Drill').Drill = drill
+        obj.addProperty('Part::PropertyPartShape', 'DrillPart')
         obj.ViewObject.ShapeColor = misc_color
+
         self.part_numbers = ['CQT Photodiode']
         self.transmission = False
-        self.max_angle = 90
-        self.max_width = inch
+        self.max_angle = 0
+        self.max_width = 2.0
+        self.block_width=1.0
 
         if adapter:
             _add_linked_object(obj, "Photodiode Adapter", surface_adapter, pos_offset=(0.0, 0.0, -19.5), rot_offset=(0, 0, 0), **adapter_args)
@@ -4781,6 +4784,11 @@ class cqt_photodiode:
         mesh = _import_stl("cqt_photodiode.stl", (0.0, 0.0, 90.0), (0.0, 0.0, -19.5))
         mesh.Placement = obj.Mesh.Placement
         obj.Mesh = mesh
+
+        part = _custom_cylinder(dia=25, dz=4,
+                                x=0, y=0, z=0, dir=(1, 0, 0))
+        part.Placement = obj.Placement
+        obj.DrillPart = part
 
 
 class ViewProvider:
