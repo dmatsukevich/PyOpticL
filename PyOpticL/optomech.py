@@ -16,55 +16,69 @@ inch = 25.4
 metric = False 
 
 bolt_4_40 = {
+    "name": "4-40",
     "clear_dia":0.120*inch,
     "tap_dia":0.089*inch,
     "head_dia":5.50,
-    "head_dz":2.5 # TODO measure this
+    "head_dz":2.5, # TODO measure this
+    "clear_dia_string": '3.05 mm, unthreaded'
 }
 
 bolt_8_32 = {
+    "name": "8-32",
     "clear_dia":0.172*inch,
     "tap_dia":0.136*inch,
     "head_dia":7,
-    "head_dz":4.4
+    "head_dz":4.4,
+    "clear_dia_string": '4.37 mm, unthreaded'
 }
 
 bolt_14_20 = {
+    "name": "1/4-20",
     "clear_dia":0.260*inch,
     "tap_dia":0.201*inch,
     "head_dia":9.8,
     "head_dz":8,
-    "washer_dia":9/16*inch
+    "washer_dia":9/16*inch,
+    "clear_dia_string": '6.60 mm, unthreaded'
 }
 
 # Metric bolts
 bolt_m2_5 = { 
+    "name":"M2.5",
     "clear_dia":2.9,
     "tap_dia":2.05,
     "head_dia":4.60,
-    "head_dz":2.6 # With some tolerance
+    "head_dz":2.6, # With some tolerance
+    "clear_dia_string": '2.9 mm, unthreaded'
 }
 
 bolt_m3 = { # 4-40 equivalent 
+    "name":"M3",
     "clear_dia":3.4,
     "tap_dia":2.5,
     "head_dia":5.70,
-    "head_dz":3.0 # TODO measure this
+    "head_dz":3.0, # TODO measure this
+    "clear_dia_string": '3.4 mm, unthreaded'
 }
 
 bolt_m4 = { # 8-32 equivalent
+    "name":"M4",
     "clear_dia":4.5,
     "tap_dia":3.3,
     "head_dia":7.50,
-    "head_dz":4.4 
+    "head_dz":4.4,
+    "clear_dia_string": '4.5 mm, unthreaded'
 }
 
 bolt_m6 = { # 1/4-20 equivalent
+    "name":"M6",
     "clear_dia":6.5,
     "tap_dia":5.0,
     "head_dia":10.0,
     "head_dz":8.0,
-    "washer_dia":12.5    
+    "washer_dia":12.5,
+    "clear_dia_string": '6.5 mm, unthreaded'    
 }
 
 adapter_color = (0.6, 0.9, 0.6)
@@ -273,9 +287,9 @@ class pinhole_self_design:
         obj.setEditorMode('Placement', 2)
         self.drill_tolerance = 1
         if metric:
-            self.bolt = bolt_8_32
-        else:
             self.bolt = bolt_m4
+        else:
+            self.bolt = bolt_8_32
 
     def execute(self, obj):
         dx = self.bolt['head_dia']+obj.OuterThickness.Value*2
@@ -331,9 +345,9 @@ class surface_adapter:
         obj.setEditorMode('Placement', 2)
         self.drill_tolerance = 1
         if metric:
-            self.bolt = bolt_8_32
-        else:
             self.bolt = bolt_m4
+        else:
+            self.bolt = bolt_8_32
 
     def execute(self, obj):
         dx = self.bolt['head_dia']+obj.OuterThickness.Value*2
@@ -384,9 +398,9 @@ class surface_adapter_405:
         obj.setEditorMode('Placement', 2)
         self.drill_tolerance = 1
         if metric:
-            self.bolt = bolt_8_32
-        else:
             self.bolt = bolt_m4
+        else:
+            self.bolt = bolt_8_32
 
     def execute(self, obj):
         dx = self.bolt['head_dia']+obj.OuterThickness.Value*2
@@ -457,9 +471,9 @@ class skate_mount_crossholes:
         obj.setEditorMode('Placement', 2)
 
         if metric:
-            self.bolt = bolt_8_32
-        else:
             self.bolt = bolt_m4
+        else:
+            self.bolt = bolt_8_32
 
     def execute(self, obj):
         if obj.Slots:
@@ -538,9 +552,9 @@ class skate_mount:
         obj.setEditorMode('Placement', 2)
 
         if metric:
-            self.bolt = bolt_8_32
-        else:
             self.bolt = bolt_m4
+        else:
+            self.bolt = bolt_8_32
 
     def execute(self, obj):
         if obj.Slots:
@@ -637,9 +651,9 @@ class prism_pair_mount:
         obj.setEditorMode('Placement', 2)
 
         if metric:
-            self.bolt = bolt_8_32
-        else:
             self.bolt = bolt_m4
+        else:
+            self.bolt = bolt_8_32
 
     def execute(self, obj):
         if obj.Slots:
@@ -711,9 +725,9 @@ class prism_pair_mount_circle:
         obj.setEditorMode('Placement', 2)
 
         if metric:
-            self.bolt = bolt_8_32
-        else:
             self.bolt = bolt_m4
+        else:
+            self.bolt = bolt_8_32
 
 
     def execute(self, obj):
@@ -835,9 +849,9 @@ class slide_mount:
         obj.setEditorMode('Placement', 2)
 
         if metric:
-            self.bolt = bolt_8_32
-        else:
             self.bolt = bolt_m4
+        else:
+            self.bolt = bolt_8_32
 
     def execute(self, obj):
         dx = self.bolt['head_dia']+obj.OuterThickness.Value*2
@@ -882,9 +896,9 @@ class fiberport_mount_hca3:
         self.max_angle = 0
         self.max_width = 1
         if metric:
-            self.bolt = bolt_8_32
-        else:
             self.bolt = bolt_m4
+        else:
+            self.bolt = bolt_8_32
 
 
     def execute(self, obj):
@@ -1035,9 +1049,9 @@ class mirror_mount_k05s2:
         obj.ViewObject.ShapeColor = mount_color
         self.part_numbers = ['POLARIS-K05S2']
         if metric:
-            self.bolt = bolt_8_32
-        else:
             self.bolt = bolt_m4
+        else:
+            self.bolt = bolt_8_32
 
         if thumbscrews:
             _add_linked_object(obj, "Upper Thumbscrew", thumbscrew_hkts_5_64, pos_offset=(-12.43, 8.89, 8.89))
@@ -1078,9 +1092,9 @@ class mirror_mount_k05s1:
         obj.ViewObject.ShapeColor = mount_color
         self.part_numbers = ['POLARIS-K05S1']
         if metric:
-            self.bolt = bolt_8_32
-        else:
             self.bolt = bolt_m4
+        else:
+            self.bolt = bolt_8_32
 
         if thumbscrews:
             _add_linked_object(obj, "Upper Thumbscrew", thumbscrew_hkts_5_64, pos_offset=(-11.22, 8.89, 8.89))
@@ -1121,9 +1135,9 @@ class moon_mirror_mount:
         obj.ViewObject.ShapeColor = mount_color
         self.part_numbers = ['DMM05-Step']
         if metric:
-            self.bolt = bolt_8_32
-        else:
             self.bolt = bolt_m4
+        else:
+            self.bolt = bolt_8_32
 
     def execute(self, obj):
         mesh = _import_stl("DMM05-Step.stl", (-183, -9, 3), (-3, 3, 1.5))
@@ -1165,9 +1179,9 @@ class moon_mirror_mount_left:
         obj.ViewObject.ShapeColor = mount_color
         self.part_numbers = ['DMM05-Step']
         if metric:
-            self.bolt = bolt_8_32
-        else:
             self.bolt = bolt_m4
+        else:
+            self.bolt = bolt_8_32
 
     def execute(self, obj):
         mesh = _import_stl("DMM05-Step.stl", (177, -9, 3), (-3, 3, 1.5))
@@ -1204,9 +1218,9 @@ class splitter_mount_b05g:
         obj.ViewObject.ShapeColor = mount_color
         self.part_numbers = ['POLARIS-B05G']
         if metric:
-            self.bolt = bolt_8_32
-        else:
             self.bolt = bolt_m4
+        else:
+            self.bolt = bolt_8_32
 
     def execute(self, obj):
         mesh = _import_stl("POLARIS-B05G-Step.stl", (90, -0, 90), (-17.54, -5.313, -19.26))
@@ -1244,9 +1258,9 @@ class mirror_mount_c05g:
         obj.ViewObject.ShapeColor = mount_color
         self.part_numbers = ['POLARIS-C05G']
         if metric:
-            self.bolt = bolt_8_32
+            self.bolt = bolt_m4 
         else:
-            self.bolt = bolt_m4
+            self.bolt = bolt_8_32
 
     def execute(self, obj):
         mesh = _import_stl("POLARIS-C05G-Step.stl", (90, -0, 90), (-18.94, -4.246, -15.2))
@@ -1277,9 +1291,9 @@ class KMS_MH_12:
         obj.ViewObject.ShapeColor = mount_color
         self.part_numbers = ['MH12']
         if metric:
-            self.bolt = bolt_8_32
-        else:
             self.bolt = bolt_m4
+        else:
+            self.bolt = bolt_8_32
 
     def execute(self, obj):
         mesh = _import_stl("KMSS_MH12_step.stl", (-90, -90, 90), (-5, 0, -0.4))
@@ -1350,9 +1364,9 @@ class mirror_mount_km100:
         obj.ViewObject.ShapeColor = mount_color
         self.part_numbers = ['KM100']
         if metric:
-            self.bolt = bolt_8_32
-        else:
             self.bolt = bolt_m4
+        else:
+            self.bolt = bolt_8_32
 
     def execute(self, obj):
         mesh = _import_stl("KM100-Step.stl", (-180, 0, -90), (4.972, 0.084, -1.089))
@@ -1405,9 +1419,9 @@ class mirror_mount_km05:
         obj.ViewObject.ShapeColor = mount_color
         self.part_numbers = ['KM05']
         if metric:
-            self.bolt = bolt_8_32
-        else:
             self.bolt = bolt_m4
+        else:
+            self.bolt = bolt_8_32
 
         if thumbscrews:
             _add_linked_object(obj, "Upper Thumbscrew", thumbscrew_hkts_5_64, pos_offset=(-10.54, 9.906, 9.906))
@@ -1453,9 +1467,9 @@ class mirror_mount_km05_rot90:
         obj.ViewObject.ShapeColor = mount_color
         self.part_numbers = ['KM05']
         if metric:
-            self.bolt = bolt_8_32
-        else:
             self.bolt = bolt_m4
+        else:
+            self.bolt = bolt_8_32
 
         if thumbscrews:
             _add_linked_object(obj, "Upper Thumbscrew", thumbscrew_hkts_5_64, pos_offset=(-10.54, 9.906, -9.906))
@@ -1534,9 +1548,9 @@ class fixed_mount_smr05:
         obj.ViewObject.ShapeColor = mount_color
         self.part_numbers = ['SMR05']
         if metric:
-            self.bolt = bolt_8_32
-        else:
             self.bolt = bolt_m4
+        else:
+            self.bolt = bolt_8_32
 
         if adapter:
             _add_linked_object(obj, "Surface Adapter", surface_adapter, pos_offset=(0, 0, -16), rot_offset=(0, 0, 0), **adapter_args)
@@ -1576,9 +1590,9 @@ class prism_mount_km05pm:
         self.part_numbers = ['KM05PM']
 
         if metric:
-            self.bolt = bolt_8_32
-        else:
             self.bolt = bolt_m4
+        else:
+            self.bolt = bolt_8_32
 
         if thumbscrews:
             _add_linked_object(obj, "Upper Thumbscrew", thumbscrew_hkts_5_64, pos_offset=(-19.05, 6.985, 15.49))
@@ -1664,7 +1678,7 @@ class grating_mount_on_km05pm:
                            x=extra_x, y=dy+extra_y, z=-6, dir=(-1, -1, 1)))
         part.translate(App.Vector(-extra_x, -12.7/2*sin(lit_angle)-6*cos(lit_angle), 0))
         part = part.fuse(part)
-        part = part.cut(_custom_cylinder(dia=self.small_bolt['clear_dia'], dz=4,
+        part = part.cut(_custom_cylinder(dia=bolt_4_40['clear_dia'], dz=4,
                                          head_dia=bolt_4_40['head_dia'], head_dz=2,
                                          x=-3.175, y=8, z=-6, dir=(0, 0, -1)))
         part = part.cut(_custom_cylinder(dia=bolt_4_40['clear_dia'], dz=4,
@@ -1800,9 +1814,9 @@ class mirror_mount_ks1t:
         self.part_numbers = ['KM1T']
 
         if metric:
-            self.bolt = bolt_8_32
-        else:
             self.bolt = bolt_m4
+        else:
+            self.bolt = bolt_8_32
 
     def execute(self, obj):
         mesh = _import_stl("KS1T-Step.stl", (90, -0, -90), (22.06, 13.37, -30.35))
@@ -1869,9 +1883,9 @@ class splitter_mount_b1g:
         self.part_numbers = ['POLARIS-B1G']
 
         if metric:
-            self.bolt = bolt_8_32
-        else:
             self.bolt = bolt_m4
+        else:
+            self.bolt = bolt_8_32
 
         _add_linked_object(obj, "Surface Adapter", surface_adapter, pos_offset=(-5, 0, -19.05), rot_offset=(0, 0, 0), mount_hole_dy=30)
 
@@ -1943,9 +1957,9 @@ class mirror_mount_k1t1:
         self.part_numbers = ['KM1T']
 
         if metric:
-            self.bolt = bolt_8_32
-        else:
             self.bolt = bolt_m4
+        else:
+            self.bolt = bolt_8_32
 
     def execute(self, obj):
         mesh = _import_stl("Fiberport_mount_k1t1.stl", (90, -0, -90), (97.06, 17.87, -10.35))
@@ -2200,9 +2214,9 @@ class laser_cavity_mount_lower_plate:
         obj.ViewObject.ShapeColor = adapter_color
 
         if metric:
-            self.bolt = bolt_8_32
-        else:
             self.bolt = bolt_m4
+        else:
+            self.bolt = bolt_8_32
 
     def execute(self, obj):
         part = _custom_box(dx=obj.Length.Value, dy=obj.Width.Value, dz=obj.Thickness.Value,
@@ -2515,9 +2529,9 @@ class lens_holder_l05g:
         self.part_numbers = ['POLARIS-L05G']
 
         if metric:
-            self.bolt = bolt_8_32
-        else:
             self.bolt = bolt_m4
+        else:
+            self.bolt = bolt_8_32
 
     def execute(self, obj):
         mesh = _import_stl("POLARIS-L05G-Step.stl", (90, -0, 90), (-26.57, -13.29, -18.44))
@@ -2596,9 +2610,9 @@ class prism_mount_km100pm:
         self.part_numbers = ['KM100PM']
 
         if metric:
-            self.bolt = bolt_8_32
+            self.bolt = bolt_m4 
         else:
-            self.bolt = bolt_m4
+            self.bolt = bolt_8_32
 
     def execute(self, obj):
         mesh = _import_stl("KM100PM-Step.stl", (90, -0, -90), (-8.877, 38.1, -6.731))
@@ -3075,9 +3089,9 @@ class lens_mount_sm1tc:
         obj.ViewObject.ShapeColor = mount_color
 
         if metric:
-            self.bolt = bolt_8_32
-        else:
             self.bolt = bolt_m4
+        else:
+            self.bolt = bolt_8_32
 
     def execute(self, obj):        
         mesh = _import_stl("SM1TC_SM1L03.stl", (90,0,90), (1.3,0,0,)) # clamp for tube for lens
@@ -3136,9 +3150,9 @@ class surface_adapter_wide:
         self.drill_tolerance = 1
 
         if metric:
-            self.bolt = bolt_8_32
-        else:
             self.bolt = bolt_m4
+        else:
+            self.bolt = bolt_8_32
 
     def execute(self, obj):
         dx = self.bolt['head_dia']+obj.OuterThickness.Value*2
@@ -3183,9 +3197,9 @@ class square_hollow:
         # self.part_numbers = ['POLARIS-K05S2']
 
         if metric:
-            self.bolt = bolt_8_32
-        else:
             self.bolt = bolt_m4
+        else:
+            self.bolt = bolt_8_32
 
         # if thumbscrews:
         #     _add_linked_object(obj, "Upper Thumbscrew", thumbscrew_hkts_5_64, pos_offset=(-15.03, 8.89, 8.89))
@@ -3346,9 +3360,9 @@ class rb_cell_holder_old:
         obj.ViewObject.ShapeColor = adapter_color
 
         if metric:
-            self.bolt = bolt_8_32
-        else:
             self.bolt = bolt_m4
+        else:
+            self.bolt = bolt_8_32 
 
     def execute(self, obj):
         mesh = _import_stl("rb_cell_holder_middle.stl", (0, 0, 0), ([0, 5, 0]))
@@ -3498,9 +3512,9 @@ class rotation_stage_rsp05_vertical:
         self.part_numbers = ['RSP05']
 
         if metric:
-            self.bolt = bolt_8_32
-        else:
             self.bolt = bolt_m4
+        else:
+            self.bolt = bolt_8_32
 
     def execute(self, obj):
         mesh = _import_stl("RSP05-Step.stl", (90, -0, 90), (2.084, -1.148, 0.498))
@@ -3535,9 +3549,9 @@ class rb_cell:
         self.max_angle = 10
         self.max_width = 1
         if metric:
-            self.bolt = bolt_8_32
-        else:
             self.bolt = bolt_m4
+        else:
+            self.bolt = bolt_8_32
 
     def execute(self, obj):
         mesh = _import_stl("rb_cell_holder_middle.stl", (0, 0, 0), ([0, 5, 0]))
@@ -3579,11 +3593,12 @@ class rb_cell_new:
         self.max_angle = 10
         self.max_width = 1
         if metric:
-            self.bolt     = bolt_8_32
-            self.big_bolt = bolt_14_20
-        else:
             self.bolt     = bolt_m4
             self.big_bolt = bolt_m6
+        else:
+            self.bolt     = bolt_8_32
+            self.big_bolt = bolt_14_20
+
 
     def execute(self, obj):
         cell_dx = 88        #longer tibe, was 88
@@ -4649,10 +4664,10 @@ class qubig_eom_adapter:
         self.m4_holes   = [(0.0, 0.0)]
 
         if metric:
-            self.bolt = bolt_8_32
+            self.bolt = bolt_m4
             self.tiny_bolt = bolt_m2_5
         else:
-            self.bolt = bolt_m4
+            self.bolt = bolt_8_32
             self.tiny_bolt = bolt_m2_5
 
     def execute(self, obj):
