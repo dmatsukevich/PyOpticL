@@ -113,11 +113,11 @@ else:
     #     # blockObj.Fontsize = 8
     #     blockObj.AnnoText = "dd \n dd"
         anno = FreeCAD.ActiveDocument.addObject('TechDraw::DrawViewAnnotation','Symbol Annotation')
-        anno.Text = ['A -- \u00F8 6.50mm, ??\u2334 \u00F8 13.20mm, \u2193 10mm ??', 'B -- \u00F8 4.5 mm, through',  'C -- M3, thread']
+        anno.Text = ['A -- \u00F8 6.50mm, \u2334 \u00F8 12.50mm, \u2193 10mm', 'B -- \u00F8 4.5 mm, through',  'C -- M3, thread']
         anno.TextStyle = 'Bold'
         anno.X = 45
         anno.Y = 145
-        anno.MaxWidth = 135
+        anno.MaxWidth = 125
         rc = page.addView(anno)
         
         view.touch()
