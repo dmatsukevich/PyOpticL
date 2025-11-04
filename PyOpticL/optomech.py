@@ -3007,9 +3007,10 @@ class mount_for_km100pm:
         arm_clearance (float) : The distance between the bottom of the adapter arm and the bottom of the km100pm
         stage_thickness (float) : The thickness of the stage that mounts to the AOM
         stage_length (float) : The length of the stage that mounts to the AOM
+        aom (string) : Select mounting hole diameter for AOMs, Isomet 1205C (4_40) or "AA Optoelectronic" (M2.5)
     '''
     type = 'Part::FeaturePython'
-    def __init__(self, obj, drill=True, slot_length=5, countersink=False, counter_depth=3, arm_thickness=8, arm_clearance=2, stage_thickness=4, stage_length=21):
+    def __init__(self, obj, drill=True, slot_length=5, countersink=False, counter_depth=3, arm_thickness=8, arm_clearance=2, stage_thickness=4, stage_length=21, aom="Isomet"):
         obj.Proxy = self
         ViewProvider(obj.ViewObject)
 
@@ -3026,6 +3027,18 @@ class mount_for_km100pm:
         obj.ViewObject.ShapeColor = adapter_color
         obj.setEditorMode('Placement', 2)
 
+        if metric:
+            self.bolt = bolt_m4
+            self.small_bolt = bolt_m3
+        else:
+            self.bolt = bolt_8_32
+            self.small_bolt = bolt_4_40
+
+        if aom=="AA_Optoelectronic":
+            self.aom_bolt=bolt_m2_5
+        else: # Default is Isomet 1205C
+            self.aom_bolt=bolt_4_40
+
     def execute(self, obj):
         dx = obj.ArmThickness.Value
         dy = 47.5
@@ -3038,14 +3051,14 @@ class mount_for_km100pm:
         part = part.fuse(_custom_box(dx=stage_dx, dy=dy, dz=stage_dz,
                                      x=0, y=0, z=dz, dir=(1, 0, -1)))
         for ddy in [15.2, 38.1]:
-            part = part.cut(_custom_box(dx=dx, dy=obj.SlotLength.Value+bolt_4_40['clear_dia'], dz=bolt_4_40['clear_dia'],
+            part = part.cut(_custom_box(dx=dx, dy=obj.SlotLength.Value+self.small_bolt['clear_dia'], dz=self.small_bolt['clear_dia'],
                                         x=dx/2, y=25.4-ddy, z=6.4,
-                                        fillet=bolt_4_40['clear_dia']/2, dir=(-1, 0, 0)))
-            part = part.cut(_custom_box(dx=dx/2, dy=obj.SlotLength.Value+bolt_4_40['head_dia'], dz=bolt_4_40['head_dia'],
+                                        fillet=self.small_bolt['clear_dia']/2, dir=(-1, 0, 0)))
+            part = part.cut(_custom_box(dx=dx/2, dy=obj.SlotLength.Value+self.small_bolt['head_dia'], dz=self.small_bolt['head_dia'],
                                         x=dx/2, y=25.4-ddy, z=6.4,
-                                        fillet=bolt_4_40['head_dia']/2, dir=(-1, 0, 0)))
+                                        fillet=self.small_bolt['head_dia']/2, dir=(-1, 0, 0)))
         for ddy in [0, -11.42, -26.65, -38.07]:
-            part = part.cut(_custom_cylinder(dia=bolt_4_40['clear_dia'], dz=stage_dz, head_dia=bolt_4_40['head_dia'],
+            part = part.cut(_custom_cylinder(dia=self.aom_bolt['clear_dia'], dz=stage_dz, head_dia=self.aom_bolt['head_dia'],
                                         head_dz=obj.CounterDepth.Value, countersink=obj.Countersink,
                                         x=11.25, y=18.9+ddy, z=dz-4, dir=(0,0,1)))
         part.translate(App.Vector(dx/2, 25.4-15.2+obj.SlotLength.Value/2, -6.4))
