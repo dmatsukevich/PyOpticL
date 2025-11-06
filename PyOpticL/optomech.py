@@ -4780,6 +4780,70 @@ class qubig_eom_yb7_4:
         obj.Mesh = mesh
 
 
+
+class photodiode_adapter:
+    '''
+    Adapter for CQT Photodiode
+
+    Args:
+        drill (bool) : Whether baseplate mounting for this part should be drilled
+        mount_hole_dy (float) : The spacing between the two mount holes of the adapter
+        adapter_height (float) : The height of the suface adapter
+        adapter_width (float) : The width of the surface adapter
+        outer_thickness (float) : The thickness of the walls around the bolt holes
+    '''
+    type = 'Part::FeaturePython'
+    def __init__(self, obj, drill=True, mount_hole_dy=42, adapter_height=8, adapter_width=18, outer_thickness=2):
+        obj.Proxy = self
+        ViewProvider(obj.ViewObject)
+
+        obj.addProperty('App::PropertyBool', 'Drill').Drill = drill
+        obj.addProperty('App::PropertyLength', 'MountHoleDistance').MountHoleDistance = mount_hole_dy
+        obj.addProperty('App::PropertyLength', 'AdapterHeight').AdapterHeight = adapter_height
+        obj.addProperty('App::PropertyLength', 'AdapterWidth').AdapterWidth   = adapter_width        
+        obj.addProperty('App::PropertyLength', 'OuterThickness').OuterThickness = outer_thickness
+        obj.addProperty('Part::PropertyPartShape', 'DrillPart')
+
+        obj.ViewObject.ShapeColor = adapter_color
+        obj.setEditorMode('Placement', 2)
+        self.drill_tolerance = 1
+        self.hole_spacing = 7.0
+        self.photodiode_hole_offset = - 1.0
+        if metric:
+            self.bolt = bolt_m4
+        else:
+            self.bolt = bolt_8_32
+
+
+    def execute(self, obj):
+#        dx = self.bolt['head_dia']+obj.OuterThickness.Value*2
+        dx = obj.AdapterWidth.Value
+        dy = obj.MountHoleDistance.Value + self.bolt['head_dia'] + obj.OuterThickness.Value*2
+        dz = obj.AdapterHeight.Value
+
+
+        part = _custom_box(dx=dx, dy=dy, dz=dz,
+                           x=0, y=0, z=0, dir=(0, 0, -1),
+                           fillet=5)
+        for i in [1, -1]:
+            part = part.cut(_custom_cylinder(dia=self.bolt['clear_dia'], dz=dz,
+                                             head_dia=self.bolt['head_dia'], head_dz=self.bolt['head_dz'],
+                                             x=self.photodiode_hole_offset, y=i * self.hole_spacing, z=-dz, dir=(0,0,1)))
+            
+        for i in [-1, 1]:
+            part = part.cut(_custom_cylinder(dia=self.bolt['clear_dia'], dz=dz,
+                                             head_dia=self.bolt['head_dia'], head_dz=self.bolt['head_dz'],
+                                             x=0, y=i*obj.MountHoleDistance.Value/2, z=0))
+        obj.Shape = part
+
+        part = _bounding_box(obj, self.drill_tolerance, 6)
+        for i in [-1, 1]:
+            part = part.fuse(_custom_cylinder(dia=self.bolt['tap_dia'], dz=drill_depth,
+                                              x=0, y=i*obj.MountHoleDistance.Value/2, z=0))
+        part.Placement = obj.Placement
+        obj.DrillPart = part
+
+
 class photodiode_cqt:
     '''
     CQT Photodiode
@@ -4791,7 +4855,7 @@ class photodiode_cqt:
         cqt_photodiode_adapter (adapter_args)
     '''
     type = 'Mesh::FeaturePython'
-    def __init__(self, obj, drill=True, adapter_args=dict(mount_hole_dy=42.0, outer_thickness=3), adapter = True):
+    def __init__(self, obj, drill=True, adapter_args=dict(mount_hole_dy=42.0, adapter_width=18.0, outer_thickness=3), adapter = True):
         obj.Proxy = self
         ViewProvider(obj.ViewObject)
 
@@ -4806,10 +4870,10 @@ class photodiode_cqt:
         self.block_width=1.0
 
         if adapter:
-            _add_linked_object(obj, "Photodiode Adapter", surface_adapter, pos_offset=(0.0, 0.0, -19.5), rot_offset=(0, 0, 0), **adapter_args)
+            _add_linked_object(obj, "Photodiode Adapter", photodiode_adapter, pos_offset=(1.0, 0.0, -19.5), rot_offset=(0, 0, 0), **adapter_args)
 
     def execute(self, obj):
-        mesh = _import_stl("cqt_photodiode.stl", (0.0, 0.0, 90.0), (0.0, 0.0, -19.5))
+        mesh = _import_stl("cqt_photodiode.stl", (0.0, 0.0, 90.0), (1.0, 0.0, -19.5))
         mesh.Placement = obj.Mesh.Placement
         obj.Mesh = mesh
 
