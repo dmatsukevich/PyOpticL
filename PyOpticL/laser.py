@@ -202,10 +202,10 @@ class beam_path:
                     # handle different constraint methods
                     if hasattr(inline_obj, "Distance"):
                         comp_d = inline_obj.Distance.Value
-                    if hasattr(inline_obj, "xPos"):
+                    if hasattr(inline_obj, "xPos") and cos(a1) != 0.0:
                         x_pos = inline_obj.xPos.Value
                         comp_d = (x_pos-x1)/cos(a1)
-                    if hasattr(inline_obj, "yPos"):
+                    if hasattr(inline_obj, "yPos") and sin(a1) != 0.0:
                         y_pos = inline_obj.yPos.Value
                         comp_d = (y_pos-y1)/sin(a1)
 
